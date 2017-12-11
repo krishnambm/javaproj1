@@ -3,6 +3,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.Collection;
+import java.util.function.BiConsumer;
+
 
 public class CustomerService {
 
@@ -10,9 +12,13 @@ public class CustomerService {
     private static AtomicInteger nextId = new AtomicInteger(0);
 
     public ArrayList<Customer> getCustomerList() {
-       customerList.forEach((k, v) -> System.out.println("id=" + k + " name=" + v.getName()));
-       Collection<Customer> custList = customerList.values();
-       return new ArrayList(custList);
+
+        // Printing using lambda expression instead of using for loop
+        customerList.forEach((k, v) -> System.out.println("id=" + k + " name=" + v.getName()));
+        System.out.println("\n\n");
+
+        Collection<Customer> custList = customerList.values();
+        return new ArrayList(custList);
 
     }
 
@@ -35,4 +41,5 @@ public class CustomerService {
         customerList.put(cust.getId(), cust);
         return cust;
     }
+
 }
