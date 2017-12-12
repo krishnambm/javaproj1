@@ -2,13 +2,13 @@ import java.util.Arrays;
 import java.util.List;
 
 enum Status {
-    PRIVILIGED (0),
+    PRIVILEGED(0),
     NORMAL (1),
     RESTRICTED (2);
 
     private int code;
 
-    private Status(int code) {
+    Status(int code) {
         this.code = code;
     }
 

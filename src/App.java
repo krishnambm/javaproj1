@@ -3,6 +3,8 @@ import java.util.Collections;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.List;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class App {
     public static void main(String[] args) {
@@ -14,10 +16,15 @@ public class App {
         int code = status.getCode();
 
         CustomerService service = new CustomerService();
-        service.addCustomer("joe", status);
-        service.addCustomer("john", status);
-        service.addCustomer("abcd", status);
+        service.addCustomer("joe", Status.PRIVILEGED);
+        service.addCustomer("john", Status.NORMAL);
+        service.addCustomer("paul", Status.NORMAL);
+        service.addCustomer("rob", Status.NORMAL);
+        service.addCustomer("artev", Status.RESTRICTED);
         service.addCustomer("david", status);
+        service.addCustomer("charlie", status);
+        service.addCustomer("pinto", Status.RESTRICTED);
+        service.addCustomer("manoj", status);
 
         ArrayList<Customer> customerList = service.getCustomerList();
         Representer repr = (x) -> "id=" + x.getId() + " name=" + x.getName();
@@ -47,6 +54,44 @@ public class App {
         System.out.println(doTransformGeneric(customerList, new GetStatusGeneric() ));
         System.out.println(doTransformGeneric(customerList, (customer) -> customer.getName()));
         System.out.println(doTransformGeneric(customerList, (customer) -> customer.getStatus().toString()));
+
+        System.out.println(customerList.stream().map((customer) -> customer.getName()).count());
+        System.out.println(customerList.stream().map((customer) -> customer.getStatus().toString()).count());
+
+        Supplier<String> sup = getSupplier("hello");
+        System.out.println(sup.get());
+
+        customerList = service.getCustomerList();
+        names = customerList.stream()
+                .filter((customer) -> customer.getStatus() == Status.NORMAL)
+                .map(customer -> customer.getName()).collect(Collectors.toList());
+        System.out.println(names);
+
+        names = customerList.stream().unordered().parallel()
+                .peek(s -> System.out.println(Thread.currentThread().getName() + " Peek1: " + s.getName()))
+                .filter((customer) -> customer.getStatus() == Status.NORMAL)
+                .peek(s -> System.out.println(Thread.currentThread().getName() + " Peek2: " + s.getName()))
+                .map(customer -> customer.getName()).collect(Collectors.toList());
+        System.out.println(names);
+
+    }
+
+    public static Supplier<String> getSupplier(String str) {
+        Supplier<String> s = () -> "Supplied " + str;
+        return s;
+    }
+
+
+    public static class GetNameFunction implements Function<Customer, String> {
+        public String apply(Customer s) {
+            return s.getName();
+        }
+    }
+
+    public static class GetStatusFunction implements Function<Customer, String> {
+        public String apply(Customer s) {
+            return s.getStatus().toString();
+        }
     }
 
     public static <T, R> List<R> doTransformGeneric(List<T> list, TransformGeneric<T, R> transform) {
