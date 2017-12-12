@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.List;
@@ -44,13 +43,13 @@ public class App {
         System.out.println(doTransform(customerList, (customer) -> customer.getName()));
         System.out.println(doTransform(customerList, (customer) -> customer.getStatus().toString()));
 
-        System.out.println(doTransformG(customerList, new GetNameG() ));
-        System.out.println(doTransformG(customerList, new GetStatusG() ));
-        System.out.println(doTransformG(customerList, (customer) -> customer.getName()));
-        System.out.println(doTransformG(customerList, (customer) -> customer.getStatus().toString()));
+        System.out.println(doTransformGeneric(customerList, new GetNameGeneric() ));
+        System.out.println(doTransformGeneric(customerList, new GetStatusGeneric() ));
+        System.out.println(doTransformGeneric(customerList, (customer) -> customer.getName()));
+        System.out.println(doTransformGeneric(customerList, (customer) -> customer.getStatus().toString()));
     }
 
-    public static <T, R> List<R> doTransformG(List<T> list, TransformG<T, R> transform) {
+    public static <T, R> List<R> doTransformGeneric(List<T> list, TransformGeneric<T, R> transform) {
         List<R> result = new ArrayList<>();
         for (T customer: list) {
             result.add(transform.doIt(customer));
@@ -81,17 +80,17 @@ public class App {
         return result;
     }
 
-    public interface TransformG <T, R> {
+    public interface TransformGeneric<T, R> {
         public R doIt(T c);
     }
 
-    public static class GetNameG implements TransformG<Customer, String> {
+    public static class GetNameGeneric implements TransformGeneric<Customer, String> {
         public String doIt(Customer c) {
             return c.getName();
         }
     }
 
-    public static class GetStatusG implements TransformG<Customer, String> {
+    public static class GetStatusGeneric implements TransformGeneric<Customer, String> {
         public String doIt(Customer c) {
             return c.getStatus().toString();
         }
