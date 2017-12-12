@@ -6,6 +6,7 @@ import java.util.List;
 
 public class App {
     public static void main(String[] args) {
+
         String name = "joe";
         String statusStr = "NORMAL";
 
@@ -19,16 +20,20 @@ public class App {
         service.addCustomer("david", status);
 
         ArrayList<Customer>  customerList = service.getCustomerList();
+        Representer repr = (x) -> "id=" + x.getId() + " name=" + x.getName();
+
+        printItems(customerList, repr);
 
         // Sort students by Name
         Collections.sort(customerList, (c1, c2) -> c1.getName().compareTo(c2.getName()));
-        customerList.forEach((x) -> System.out.println("id=" + x.getId() + " name=" + x.getName()));
-        System.out.println("\n");
+        printItems(customerList, repr);
 
         customersStartingWithUsingLambda(customerList, "j").forEach((x) -> System.out.println("id=" + x.getId() + " name=" + x.getName()));
         System.out.println("\n");
         customersStartingWith(customerList, "j").forEach((x) -> System.out.println("id=" + x.getId() + " name=" + x.getName()));
         System.out.println("\n");
+
+        Checker startsWithJ = (s) -> s.getName().startsWith("j");
 
         }
 
@@ -45,6 +50,19 @@ public class App {
 
     public static List<Customer> customersStartingWithUsingLambda(List<Customer> orig, String prefix){
         return orig.stream().filter(c1 -> c1.getName().startsWith(prefix)).collect(Collectors.toList());
+    }
+
+    public interface Checker {
+        public boolean isAcceptable(Customer s);
+    }
+
+    public static void printItems(ArrayList<Customer> orig, Representer representer) {
+        orig.forEach((x) -> System.out.println(representer.printItem(x)));
+        System.out.println("\n");
+    }
+
+    public interface Representer {
+        public String printItem(Customer s);
     }
 
 
