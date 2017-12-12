@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.function.BiConsumer;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.List;
 
@@ -31,9 +32,6 @@ public class App {
         customersStartingWithUsingLambda(customerList, "j").forEach((x) -> System.out.println("id=" + x.getId() + " name=" + x.getName()));
         System.out.println("\n");
         customersStartingWith(customerList, "j").forEach((x) -> System.out.println("id=" + x.getId() + " name=" + x.getName()));
-        System.out.println("\n");
-
-        Checker startsWithJ = (s) -> s.getName().startsWith("j");
 
         }
 
@@ -46,6 +44,16 @@ public class App {
         }
         return result;
 
+    }
+
+    public <A> List<A> filter(List<A> orig, Predicate<A> checker) {
+        List<A> result = new ArrayList<>();
+        orig.forEach(arg -> {
+            if (checker.test(arg)) {
+                result.add(arg);
+            }
+        });
+        return result;
     }
 
     public static List<Customer> customersStartingWithUsingLambda(List<Customer> orig, String prefix){
