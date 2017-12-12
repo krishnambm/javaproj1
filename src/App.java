@@ -7,6 +7,8 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.Map;
 import java.util.Set;
+import java.util.Optional;
+import java.util.TreeMap;
 
 public class App {
     public static void main(String[] args) {
@@ -18,11 +20,11 @@ public class App {
         int code = status.getCode();
 
         CustomerService service = new CustomerService();
+        service.addCustomer("artev", Status.RESTRICTED);
         service.addCustomer("joe", Status.PRIVILEGED);
         service.addCustomer("john", Status.NORMAL);
         service.addCustomer("paul", Status.NORMAL);
         service.addCustomer("rob", Status.NORMAL);
-        service.addCustomer("artev", Status.RESTRICTED);
         service.addCustomer("david", status);
         service.addCustomer("charlie", status);
         service.addCustomer("pinto", Status.RESTRICTED);
@@ -47,13 +49,13 @@ public class App {
         List<String> statuses = getStatuses(customerList);
         System.out.println(statuses);
 
-        System.out.println(doTransform(customerList, new GetName() ));
-        System.out.println(doTransform(customerList, new GetStatus() ));
+        System.out.println(doTransform(customerList, new GetName()));
+        System.out.println(doTransform(customerList, new GetStatus()));
         System.out.println(doTransform(customerList, (customer) -> customer.getName()));
         System.out.println(doTransform(customerList, (customer) -> customer.getStatus().toString()));
 
-        System.out.println(doTransformGeneric(customerList, new GetNameGeneric() ));
-        System.out.println(doTransformGeneric(customerList, new GetStatusGeneric() ));
+        System.out.println(doTransformGeneric(customerList, new GetNameGeneric()));
+        System.out.println(doTransformGeneric(customerList, new GetStatusGeneric()));
         System.out.println(doTransformGeneric(customerList, (customer) -> customer.getName()));
         System.out.println(doTransformGeneric(customerList, (customer) -> customer.getStatus().toString()));
 
@@ -82,8 +84,42 @@ public class App {
 
         Map<Status, Set<String>> statusSet = customerList.stream().unordered().parallel()
                 .collect(Collectors.groupingBy(customer -> customer.getStatus(),
-                         Collectors.mapping(customer -> customer.getName(), Collectors.toSet() )));
+                        Collectors.mapping(customer -> customer.getName(), Collectors.toSet())));
         System.out.println(statusSet);
+
+        TreeMap<Status, Set<String>> statusTreeMap = customerList.stream()
+                .collect(Collectors.groupingBy(
+                        customer -> customer.getStatus(),
+                        () -> new TreeMap<Status, Set<String>>(),
+                        Collectors.mapping(customer -> customer.getName(), Collectors.toSet())));
+        System.out.println(statusTreeMap);
+
+
+        Optional<Integer> len = customerList.stream().unordered().parallel()
+                .map(customer -> customer.getName().length())
+                .reduce((a1, a2) -> a1 + a2);
+        len.ifPresent(c -> System.out.println(c));
+
+        Integer ilen = customerList.stream().unordered().parallel()
+                .map(customer -> customer.getName().length())
+                .reduce(0, Integer::sum);
+        System.out.println(ilen);
+
+        Long lsum = customerList.stream().unordered().parallel()
+                .map(customer -> (long) customer.getName().length())
+                .reduce(0L, (a1, a2) -> a1 + a2);
+        System.out.println(lsum);
+
+        long llsum = customerList.stream().unordered().parallel()
+                .mapToLong(customer -> customer.getName().length())
+                .reduce(0L, (a1, a2) -> a1 + a2);
+        System.out.println(llsum);
+
+
+        Optional<Double> dlen = customerList.stream().unordered().parallel()
+                .map(customer -> new Double(customer.getName().length()))
+                .reduce((a1, a2) -> a1 + a2);
+        dlen.ifPresent(c -> System.out.println(c));
 
 
     }
@@ -108,21 +144,22 @@ public class App {
 
     public static <T, R> List<R> doTransformGeneric(List<T> list, TransformGeneric<T, R> transform) {
         List<R> result = new ArrayList<>();
-        for (T customer: list) {
+        for (T customer : list) {
             result.add(transform.doIt(customer));
         }
         return result;
     }
+
     public static List<String> doTransform(List<Customer> list, Transform transform) {
         List<String> result = new ArrayList<>();
-        for (Customer customer: list) {
+        for (Customer customer : list) {
             result.add(transform.doIt(customer));
         }
         return result;
     }
 
     public static List<String> getNames(List<Customer> list) {
-        List<String>  result = new ArrayList<>();
+        List<String> result = new ArrayList<>();
         for (Customer customer : list) {
             result.add(customer.getName());
         }
@@ -130,7 +167,7 @@ public class App {
     }
 
     public static List<String> getStatuses(List<Customer> list) {
-        List<String>  result = new ArrayList<>();
+        List<String> result = new ArrayList<>();
         for (Customer customer : list) {
             result.add(customer.getStatus().toString());
         }
@@ -169,7 +206,7 @@ public class App {
         }
     }
 
-    public static List<Customer> customersStartingWith(List<Customer> orig, String prefix){
+    public static List<Customer> customersStartingWith(List<Customer> orig, String prefix) {
         List<Customer> result = new ArrayList<>();
         for (Customer cust : orig) {
             if (cust.getName().startsWith(prefix)) {
@@ -190,7 +227,7 @@ public class App {
         return result;
     }
 
-    public static List<Customer> customersStartingWithUsingLambda(List<Customer> orig, String prefix){
+    public static List<Customer> customersStartingWithUsingLambda(List<Customer> orig, String prefix) {
         return orig.stream().filter(c1 -> c1.getName().startsWith(prefix)).collect(Collectors.toList());
     }
 
