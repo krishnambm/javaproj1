@@ -67,6 +67,8 @@ public class GenericDemo {
         ourForEach(listI, this::printO);
         ourForEach(listI, GenericDemo::printN);
         ourForEach(listI, GenericDemo::printI);
+
+        // ourForEach(listI, new consumerN());
     }
 
     public <T> void ourForEach(List<T> list, Consumer<T> consumer) {
@@ -120,6 +122,12 @@ public class GenericDemo {
         // T b = list.get(0); Cannot be done as list can be T or super of T
         for(T it : arr) {
             list.add(it);
+        }
+    }
+
+    public class consumerN implements Consumer<Number> {
+        public void accept(Number n) {
+            System.out.println(n);
         }
     }
 

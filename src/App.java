@@ -20,7 +20,7 @@ public class App {
         service.addCustomer("abcd", status);
         service.addCustomer("david", status);
 
-        ArrayList<Customer>  customerList = service.getCustomerList();
+        ArrayList<Customer> customerList = service.getCustomerList();
         Representer repr = (x) -> "id=" + x.getId() + " name=" + x.getName();
 
         printItems(customerList, repr);
@@ -33,7 +33,85 @@ public class App {
         System.out.println("\n");
         customersStartingWith(customerList, "j").forEach((x) -> System.out.println("id=" + x.getId() + " name=" + x.getName()));
 
+        List<String> names = getNames(customerList);
+        System.out.println(names);
+
+        List<String> statuses = getStatuses(customerList);
+        System.out.println(statuses);
+
+        System.out.println(doTransform(customerList, new GetName() ));
+        System.out.println(doTransform(customerList, new GetStatus() ));
+        System.out.println(doTransform(customerList, (customer) -> customer.getName()));
+        System.out.println(doTransform(customerList, (customer) -> customer.getStatus().toString()));
+
+        System.out.println(doTransformG(customerList, new GetNameG() ));
+        System.out.println(doTransformG(customerList, new GetStatusG() ));
+        System.out.println(doTransformG(customerList, (customer) -> customer.getName()));
+        System.out.println(doTransformG(customerList, (customer) -> customer.getStatus().toString()));
+    }
+
+    public static <T, R> List<R> doTransformG(List<T> list, TransformG<T, R> transform) {
+        List<R> result = new ArrayList<>();
+        for (T customer: list) {
+            result.add(transform.doIt(customer));
         }
+        return result;
+    }
+    public static List<String> doTransform(List<Customer> list, Transform transform) {
+        List<String> result = new ArrayList<>();
+        for (Customer customer: list) {
+            result.add(transform.doIt(customer));
+        }
+        return result;
+    }
+
+    public static List<String> getNames(List<Customer> list) {
+        List<String>  result = new ArrayList<>();
+        for (Customer customer : list) {
+            result.add(customer.getName());
+        }
+        return result;
+    }
+
+    public static List<String> getStatuses(List<Customer> list) {
+        List<String>  result = new ArrayList<>();
+        for (Customer customer : list) {
+            result.add(customer.getStatus().toString());
+        }
+        return result;
+    }
+
+    public interface TransformG <T, R> {
+        public R doIt(T c);
+    }
+
+    public static class GetNameG implements TransformG<Customer, String> {
+        public String doIt(Customer c) {
+            return c.getName();
+        }
+    }
+
+    public static class GetStatusG implements TransformG<Customer, String> {
+        public String doIt(Customer c) {
+            return c.getStatus().toString();
+        }
+    }
+
+    public interface Transform {
+        public String doIt(Customer c);
+    }
+
+    public static class GetName implements Transform {
+        public String doIt(Customer c) {
+            return c.getName();
+        }
+    }
+
+    public static class GetStatus implements Transform {
+        public String doIt(Customer c) {
+            return c.getStatus().toString();
+        }
+    }
 
     public static List<Customer> customersStartingWith(List<Customer> orig, String prefix){
         List<Customer> result = new ArrayList<>();
