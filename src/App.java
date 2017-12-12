@@ -5,6 +5,8 @@ import java.util.stream.Collectors;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.Map;
+import java.util.Set;
 
 public class App {
     public static void main(String[] args) {
@@ -73,6 +75,16 @@ public class App {
                 .peek(s -> System.out.println(Thread.currentThread().getName() + " Peek2: " + s.getName()))
                 .map(customer -> customer.getName()).collect(Collectors.toList());
         System.out.println(names);
+
+        Map<Status, List<Customer>> statusMap = customerList.stream().unordered().parallel()
+                .collect(Collectors.groupingBy(customer -> customer.getStatus()));
+        System.out.println(statusMap);
+
+        Map<Status, Set<String>> statusSet = customerList.stream().unordered().parallel()
+                .collect(Collectors.groupingBy(customer -> customer.getStatus(),
+                         Collectors.mapping(customer -> customer.getName(), Collectors.toSet() )));
+        System.out.println(statusSet);
+
 
     }
 
