@@ -1,5 +1,5 @@
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 /*
@@ -14,8 +14,20 @@ import java.util.function.Consumer;
 
 public class GenericDemo {
     public static void main(String[] args) {
-        GenericDemo gc  = new GenericDemo();
+        GenericDemo gc = new GenericDemo();
         gc.go();
+    }
+
+    public static void printN(Number o) {
+        System.out.println(o);
+    }
+
+    public static void printI(Integer o) {
+        System.out.println(o);
+    }
+
+    public static void printD(Double o) {
+        System.out.println(o);
     }
 
     public void go() {
@@ -37,8 +49,8 @@ public class GenericDemo {
         result = sum(listI);
         System.out.println(result);
 
-        Integer [] nArr = {1, 2, 3};
-        Double [] dArr = {1.1, 2.2, 3.3};
+        Integer[] nArr = {1, 2, 3};
+        Double[] dArr = {1.1, 2.2, 3.3};
 
         addTo(listN, nArr);
         addTo(listN, dArr);
@@ -48,7 +60,7 @@ public class GenericDemo {
         // Avoid Adding strings to integer lists
         // l.add("abc");
 
-        for(Number it: listN) {
+        for (Number it : listN) {
             System.out.println(it.doubleValue());
         }
 
@@ -72,7 +84,7 @@ public class GenericDemo {
     }
 
     public <T> void ourForEach(List<T> list, Consumer<T> consumer) {
-        for(T t: list) {
+        for (T t : list) {
             consumer.accept(t);
         }
     }
@@ -81,24 +93,12 @@ public class GenericDemo {
         System.out.println(o);
     }
 
-    public static void printN(Number o) {
-        System.out.println(o);
-    }
-
-    public static void printI(Integer o) {
-        System.out.println(o);
-    }
-
-    public static void printD(Double o) {
-        System.out.println(o);
-    }
-
     // public double sum(List<Number> list) {
     public double sum(List<? extends Number> list) {
         double sum = 0;
         // list.add(1); Cannot add to list once it extends from Number instead of List<Number>
         // list.add(1.23);
-        for(Number n : list) {
+        for (Number n : list) {
             sum += n.doubleValue();
         }
         return sum;
@@ -117,10 +117,10 @@ public class GenericDemo {
     // public void addTo(List<? super Double> list, Double[] arr) {
 
 
-    public <T> void addTo(List<? super T> list, T [] arr) {
+    public <T> void addTo(List<? super T> list, T[] arr) {
         // T a = arr.get(0);  Can be extracted as arr is list of T only
         // T b = list.get(0); Cannot be done as list can be T or super of T
-        for(T it : arr) {
+        for (T it : arr) {
             list.add(it);
         }
     }

@@ -1,14 +1,8 @@
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.Map;
-import java.util.Set;
-import java.util.Optional;
-import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 public class App {
     public static void main(String[] args) {
@@ -129,19 +123,6 @@ public class App {
         return s;
     }
 
-
-    public static class GetNameFunction implements Function<Customer, String> {
-        public String apply(Customer s) {
-            return s.getName();
-        }
-    }
-
-    public static class GetStatusFunction implements Function<Customer, String> {
-        public String apply(Customer s) {
-            return s.getStatus().toString();
-        }
-    }
-
     public static <T, R> List<R> doTransformGeneric(List<T> list, TransformGeneric<T, R> transform) {
         List<R> result = new ArrayList<>();
         for (T customer : list) {
@@ -174,8 +155,62 @@ public class App {
         return result;
     }
 
+    public static List<Customer> customersStartingWith(List<Customer> orig, String prefix) {
+        List<Customer> result = new ArrayList<>();
+        for (Customer cust : orig) {
+            if (cust.getName().startsWith(prefix)) {
+                result.add(cust);
+            }
+        }
+        return result;
+
+    }
+
+    public static List<Customer> customersStartingWithUsingLambda(List<Customer> orig, String prefix) {
+        return orig.stream().filter(c1 -> c1.getName().startsWith(prefix)).collect(Collectors.toList());
+    }
+
+    public static void printItems(ArrayList<Customer> orig, Representer representer) {
+        orig.forEach((x) -> System.out.println(representer.printItem(x)));
+        System.out.println("\n");
+    }
+
+    public <A> List<A> filter(List<A> orig, Predicate<A> checker) {
+        List<A> result = new ArrayList<>();
+        orig.forEach(arg -> {
+            if (checker.test(arg)) {
+                result.add(arg);
+            }
+        });
+        return result;
+    }
+
     public interface TransformGeneric<T, R> {
         public R doIt(T c);
+    }
+
+    public interface Transform {
+        public String doIt(Customer c);
+    }
+
+    public interface Checker {
+        public boolean isAcceptable(Customer s);
+    }
+
+    public interface Representer {
+        public String printItem(Customer s);
+    }
+
+    public static class GetNameFunction implements Function<Customer, String> {
+        public String apply(Customer s) {
+            return s.getName();
+        }
+    }
+
+    public static class GetStatusFunction implements Function<Customer, String> {
+        public String apply(Customer s) {
+            return s.getStatus().toString();
+        }
     }
 
     public static class GetNameGeneric implements TransformGeneric<Customer, String> {
@@ -190,10 +225,6 @@ public class App {
         }
     }
 
-    public interface Transform {
-        public String doIt(Customer c);
-    }
-
     public static class GetName implements Transform {
         public String doIt(Customer c) {
             return c.getName();
@@ -204,44 +235,6 @@ public class App {
         public String doIt(Customer c) {
             return c.getStatus().toString();
         }
-    }
-
-    public static List<Customer> customersStartingWith(List<Customer> orig, String prefix) {
-        List<Customer> result = new ArrayList<>();
-        for (Customer cust : orig) {
-            if (cust.getName().startsWith(prefix)) {
-                result.add(cust);
-            }
-        }
-        return result;
-
-    }
-
-    public <A> List<A> filter(List<A> orig, Predicate<A> checker) {
-        List<A> result = new ArrayList<>();
-        orig.forEach(arg -> {
-            if (checker.test(arg)) {
-                result.add(arg);
-            }
-        });
-        return result;
-    }
-
-    public static List<Customer> customersStartingWithUsingLambda(List<Customer> orig, String prefix) {
-        return orig.stream().filter(c1 -> c1.getName().startsWith(prefix)).collect(Collectors.toList());
-    }
-
-    public interface Checker {
-        public boolean isAcceptable(Customer s);
-    }
-
-    public static void printItems(ArrayList<Customer> orig, Representer representer) {
-        orig.forEach((x) -> System.out.println(representer.printItem(x)));
-        System.out.println("\n");
-    }
-
-    public interface Representer {
-        public String printItem(Customer s);
     }
 
 

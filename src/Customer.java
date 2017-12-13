@@ -1,10 +1,7 @@
-import java.util.Arrays;
-import java.util.List;
-
 enum Status {
     PRIVILEGED(0),
-    NORMAL (1),
-    RESTRICTED (2);
+    NORMAL(1),
+    RESTRICTED(2);
 
     private int code;
 
@@ -61,6 +58,7 @@ public class Customer {
             this.id = id;
             return this;
         }
+
         public CustomerBuilder name(String name) {
             this.name = name;
             return this;
