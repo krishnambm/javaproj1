@@ -1,10 +1,12 @@
 public class Vehicle {
     @NotNull
-    @Length(min = 10)
+    @Length(min = 5)
     private String modelName;
 
+    @Limit(limit = 20)
     private int numWheels;
 
+    @Limit(limit = 8)
     private int numDoors;
 
     public String getModelName() {
