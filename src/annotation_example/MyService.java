@@ -1,4 +1,4 @@
-package AnnotationExample;
+package annotation_example;
 
 public class MyService {
 

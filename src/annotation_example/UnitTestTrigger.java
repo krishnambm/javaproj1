@@ -1,4 +1,4 @@
-package AnnotationExample;
+package annotation_example;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
