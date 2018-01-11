@@ -1,0 +1,17 @@
+package com.abccorp;
+
+/**
+ * Hello world!
+ *
+ */
+public class Employee
+{
+	String firstName;
+	String lastName;
+
+
+	@overrride
+	public String toString() {
+		return "Employee: " + firstName + " " + lastName;
+	}
+}
